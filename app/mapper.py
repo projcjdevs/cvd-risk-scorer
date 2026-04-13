@@ -70,10 +70,7 @@ GUIDANCE = {
             "Complete smoking cessation. Each cigarette at this risk level is a direct cardiac threat.",
             "Stress reduction: encourage rest, social support, and community activities.",
         ],
-        "flag": (
-            "CLINICAL NOTE: If cholesterol or blood glucose were not measured, "
-            "strongly recommend lab tests at RHU. Lab mode scoring would be more precise."
-        ),
+        "flag": None,
     },
 
     "very_high": {
@@ -103,34 +100,29 @@ GUIDANCE = {
             "Family support is critical. Involve household members in patient monitoring.",
             "Patient and family should know emergency warning signs by heart.",
         ],
-        "flag": (
-            "CRITICAL NOTE: This score indicates very high cardiovascular event risk. "
-            "If only office mode was used, lab confirmation (cholesterol, blood glucose) is strongly recommended "
-            "to rule out underestimation. Physician must be involved in all treatment decisions."
-        ),
+        "flag": None,
     },
 }
 
 
 def get_guidance(category: str, mode: str) -> dict:
-    """
-    Takes the risk category from scorer.py and the mode used,
-    returns the full structured guidance object for the health worker.
-
-    We pass 'mode' in so we can add a flag when office mode was used —
-    reminding the BHW that lab results would sharpen the picture.
-    """
-
-    # Safety check — if an unexpected category comes in, default to very_high
-    # Better to over-caution than under-caution in a clinical context
     guidance = GUIDANCE.get(category, GUIDANCE["very_high"]).copy()
 
-    # If office mode was used and no flag already exists, add a gentle note
-    if mode == "office" and guidance["flag"] is None:
-        guidance["flag"] = (
-            "Office mode used (no cholesterol or diabetes data provided). "
-            "Result is a reliable screening estimate. "
-            "For greater accuracy, obtain lipid panel and fasting blood glucose at RHU."
-        )
+    # Dynamically inject the correct flag
+    if mode == "office":
+        if category in ["high", "very_high"]:
+            guidance["flag"] = (
+                "CRITICAL NOTE: High risk detected using office vitals. "
+                "Lab confirmation (lipid panel, fasting blood glucose) is strongly "
+                "recommended at the RHU to rule out underestimation."
+            )
+        else:
+            guidance["flag"] = (
+                "Office mode used. Result is a reliable screening estimate. "
+                "For greater accuracy during routine checkups, obtain lab tests at RHU."
+            )
+    else:
+        # If it's lab mode, we can add a confirming flag, or leave it blank
+        guidance["flag"] = "Lab mode used. Risk score incorporates cholesterol and blood glucose data."
 
     return guidance
