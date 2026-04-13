@@ -1,23 +1,27 @@
-from app.scorer import compute_risk
+from app.engine import run_assessment
 
-# Test 1: Mang Pablo — 58yo male smoker, high BP, no cholesterol available
-pablo = compute_risk(age=58, sex="male", sbp=155, smoking=True, bmi=26.5)
-print("PABLO (office mode):", pablo)
+print("=" * 60)
+print("TEST 1: PABLO — 58yo male smoker, high BP, office mode")
+print("=" * 60)
+pablo = run_assessment(age=58, sex="male", sbp=155, smoking=True, bmi=26.5)
+for key, value in pablo.items():
+    print(f"{key}: {value}")
 
-# Test 2: Same patient but WITH cholesterol — should switch to lab mode
-pablo_lab = compute_risk(
-    age=58, sex="male", sbp=155, smoking=True,
-    bmi=26.5, total_chol=5.8, diabetes=False
-)
-print("PABLO (lab mode):", pablo_lab)
+print()
+print("=" * 60)
+print("TEST 2: LORNA — 42yo female, non-smoker, normal BP")
+print("=" * 60)
+lorna = run_assessment(age=42, sex="female", sbp=118, smoking=False, bmi=22.0)
+for key, value in lorna.items():
+    print(f"{key}: {value}")
 
-# Test 3: Low-risk patient — young female, non-smoker, normal BP
-lorna = compute_risk(age=42, sex="female", sbp=118, smoking=False, bmi=22.0)
-print("LORNA (low risk):", lorna)
-
-# Test 4: Very high risk — older male, very high BP, smoker, diabetic
-ernesto = compute_risk(
+print()
+print("=" * 60)
+print("TEST 3: ERNESTO — 72yo male, very high risk, lab mode")
+print("=" * 60)
+ernesto = run_assessment(
     age=72, sex="male", sbp=175, smoking=True,
     total_chol=6.5, diabetes=True
 )
-print("ERNESTO (very high):", ernesto)
+for key, value in ernesto.items():
+    print(f"{key}: {value}")
