@@ -1,39 +1,41 @@
 import math
 
 LAB_COEF = {
-    "age":     0.0491,   # each additional year increases risk
-    "sbp":     0.0107,   # each mmHg of systolic BP increases risk
-    "tc":      0.1967,   # total cholesterol in mmol/L
-    "smk":     0.7229,   # current smoker (1) vs non-smoker (0)
-    "dm":      0.5626,   # diabetes (1) vs no diabetes (0)
-    "sex_smk": 0.3430,   # extra risk for MALE smokers 
-    "sex_dm":  0.4013,   # extra risk for MALE diabetics 
+    "age":     0.0640,
+    "sbp":     0.0130,
+    "tc":      0.1512,
+    "smk":     0.5315,
+    "dm":      0.8738,
+    "sex_smk": 0.2025,
+    "sex_dm": -0.3580,
 }
 
 OFFICE_COEF = {
-    "age":     0.0491,
-    "sbp":     0.0107,
-    "bmi":     0.0249,   # BMI replaces cholesterol + diabetes in office mode
-    "smk":     0.7229,
-    "sex_smk": 0.3430,
+    "age":     0.0640,
+    "sbp":     0.0130,
+    "bmi":     0.0369,
+    "smk":     0.5315,
+    "sex_smk": 0.2025,
 }
 
 # --- PH-Specfic Values ---
 
+# From Globorisk PH calibration — NNS/FNRI data
 PH_S0 = {
-    "male":   0.9021,
-    "female": 0.9612,
+    "male":   0.9380,
+    "female": 0.9710,
 }
 
+# PH population means from FNRI NNS 2021
 PH_MEANS = {
     "age":        52.4,
-    "sbp":        130.2,
-    "tc":         5.10,    
-    "bmi":        23.8,
-    "smk_male":   0.48,    # 48% of Filipino males smoke
-    "smk_female": 0.06,    # 6% of Filipino females smoke
-    "dm_male":    0.07,
-    "dm_female":  0.08,
+    "sbp":        128.5,
+    "tc":         4.98,
+    "bmi":        23.6,
+    "smk_male":   0.436,
+    "smk_female": 0.054,
+    "dm_male":    0.068,
+    "dm_female":  0.075,
 }
 
 # --- Risk Categories ---
@@ -89,6 +91,8 @@ def compute_risk(
             + LAB_COEF["tc"] * m["tc"]
             + LAB_COEF["smk"] * mean_smk
             + LAB_COEF["dm"] * mean_dm
+            + LAB_COEF["sex_smk"] * is_male * mean_smk   
+            + LAB_COEF["sex_dm"]  * is_male * mean_dm    
         )
         mode = "lab"
 
