@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 from app.engine import run_assessment
@@ -15,4 +15,79 @@ app = FastAPI(
     version="1.0.0",
 )
 
+class PatientInput(BaseModel):
+    age: int = Field(
+        ...,                          # ... means required, no default
+        ge=40,                        # greater than or equal to 40
+        le=80,                        # less than or equal to 80
+        description="Patient age in years. Valid range: 40–80 (Globorisk model bounds)."
+    )
+    sex: str = Field(
+        ...,
+        pattern="^(male|female)$",    # only accepts exactly "male" or "female"
+        description="Biological sex: 'male' or 'female'."
+    )
+    systolic_bp: int = Field(
+        ...,
+        ge=80,
+        le=250,
+        description="Systolic blood pressure in mmHg."
+    )
+    smoking: bool = Field(
+        ...,
+        description="True if current smoker, False if non-smoker or ex-smoker."
+    )
+    bmi: Optional[float] = Field(
+        default=None,
+        ge=10.0,
+        le=60.0,
+        description="Body Mass Index in kg/m². Used in office mode when cholesterol is unavailable."
+    )
+    total_cholesterol: Optional[float] = Field(
+        default=None,
+        ge=1.0,
+        le=15.0,
+        description="Total cholesterol in mmol/L. If provided along with diabetes, enables lab mode."
+    )
+    diabetes: Optional[bool] = Field(
+        default=None,
+        description="True if diagnosed diabetic or fasting glucose ≥ 126 mg/dL. Required for lab mode."
+    )
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "age": 58,
+                "sex": "male",
+                "systolic_bp": 155,
+                "smoking": True,
+                "bmi": 26.5,
+                "total_cholesterol": None,
+                "diabetes": None,
+            }
+        }
+    }
+
+
+@app.get("/")
+def root():
+    return {
+        "service": "PulsoRisk",
+        "status": "running",
+        "note": "POST to /score with patient vitals to receive CVD risk guidance.",
+    }
+
+
+@app.post("/score")
+def score(patient: PatientInput):
+    result = run_assessment(
+        age=patient.age,
+        sex=patient.sex,
+        sbp=patient.systolic_bp,
+        smoking=patient.smoking,
+        bmi=patient.bmi,
+        total_chol=patient.total_cholesterol,
+        diabetes=patient.diabetes,
+    )
+    return result
 
