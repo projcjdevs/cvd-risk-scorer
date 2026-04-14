@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 from app.engine import run_assessment
+from app.translator import SUPPORTED_LANGUAGES
 
 app = FastAPI(
     title="CVD Risk Scorer API",
@@ -17,14 +18,14 @@ app = FastAPI(
 
 class PatientInput(BaseModel):
     age: int = Field(
-        ...,                          # ... means required, no default
-        ge=40,                        # greater than or equal to 40
-        le=80,                        # less than or equal to 80
+        ...,                        
+        ge=40,                       
+        le=80,                       
         description="Patient age in years. Valid range: 40–80 (Globorisk model bounds)."
     )
     sex: str = Field(
         ...,
-        pattern="^(male|female)$",    # only accepts exactly "male" or "female"
+        pattern="^(male|female)$",  
         description="Biological sex: 'male' or 'female'."
     )
     systolic_bp: int = Field(
@@ -53,6 +54,15 @@ class PatientInput(BaseModel):
         default=None,
         description="True if diagnosed diabetic or fasting glucose ≥ 126 mg/dL. Required for lab mode."
     )
+
+    language: str = Field(
+    default="en",
+    description=(
+        "Response language. Supported codes: "
+        "en (English), fil (Filipino), "
+        "ceb (Cebuano), hil (Hiligaynon), ilo (Ilocano)"
+    )
+)
 
     model_config = {
         "json_schema_extra": {
@@ -88,6 +98,16 @@ def score(patient: PatientInput):
         bmi=patient.bmi,
         total_chol=patient.total_cholesterol,
         diabetes=patient.diabetes,
+        language=patient.language,
     )
     return result
 
+@app.get("/languages")
+def get_languages():
+    """Returns all supported language codes and their names."""
+    return {
+        "supported": [
+            {"code": code, "name": config["name"]}
+            for code, config in SUPPORTED_LANGUAGES.items()
+        ]
+    }

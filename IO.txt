@@ -1,0 +1,31 @@
+Input:
+
+{
+  "age": 58,
+  "sex": "male",
+  "systolic_bp": 155,
+  "smoking": true,
+  "bmi": 26.5,
+  "language": "fil"
+} 
+
+Output:
+
+{
+  "signal": "HIGH RISK",
+  "mode_used": "office",
+  "action": "Kinakailangan ang agarang referral sa RHU physician. Huwag maghintay ng pangalawang pagbisita. Simulan ang antihypertensive therapy at statin ayon sa PhilPEN Step 3 protocol.",
+  "referral": "Sumangguni sa doktor ng RHU NGAYON o sa susunod na available na iskedyul sa loob ng linggong ito. Kung ang pasyente ay may pananakit sa dibdib, pagkahilo, o igsi ng paghinga — agad na sumangguni sa emergency.",
+  "medicines": "Antihypertensive: Amlodipine 5-10mg o Losartan 50-100mg (libre sa ilalim ng DOH ComPack). Statin: Atorvastatin 40mg para sa pamamahala ng kolesterol. Aspirin 80mg kung walang contraindications — talakayin sa manggagamot.",
+  "follow_up": "Muling pagtatasa sa loob ng 1 buwan pagkatapos ng pagbisita ng doktor. Buwanang BP monitoring sa barangay.",
+  "lifestyle": [
+    "Ang mga mahigpit na pagbabago sa diyeta ay medikal na kailangan na ngayon, hindi opsyonal.",
+    "Tanggalin ang mga pagkaing may mataas na sodium: mga de-latang paninda, instant noodles, mga naprosesong karne.",
+    "Unahin ang mga pagkaing mayaman sa potassium: saging, kamote, sayote — tumulong sa pagpapababa ng presyon ng dugo.",
+    "Katamtamang aerobic exercise gaya ng pinahihintulutan. Kung ang pasyente ay nakakaramdam ng kakulangan sa ginhawa sa dibdib sa panahon ng aktibidad, huminto at sumangguni.",
+    "Kumpletuhin ang pagtigil sa paninigarilyo. Ang bawat sigarilyo sa antas ng panganib na ito ay isang direktang banta sa puso.",
+    "Pagbabawas ng stress: hikayatin ang pahinga, suportang panlipunan, at mga aktibidad sa komunidad."
+  ],
+  "flag": "KRITIKAL NA TANDAAN: Natukoy ang mataas na panganib gamit ang mga vitals ng opisina. Ang kumpirmasyon sa lab (lipid panel, fasting blood glucose) ay mahigpit na inirerekomenda sa RHU para maiwasan ang pagmamaliit.",
+  "language": "Filipino"
+}
